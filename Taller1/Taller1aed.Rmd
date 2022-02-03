@@ -125,11 +125,22 @@ s22 = (1/8)*sum((x2-xb2)^2)
 s12 =(1/8)*sum((x1-xb1)*(x2-xb2))
 ```
 
+```{r}
+s11
+s22
+s12
+```
+
 ## b.
 
 ```{r}
 x1_cosito = x1*cos(26*pi/180) + x2*sin(26*pi/180)
 x2_cosito = -x1*sin(26*pi/180) + x2*cos(26*pi/180)
+```
+```{r}
+x1_cosito
+
+x2_cosito
 ```
 
 ## c.
@@ -141,7 +152,12 @@ xb2_cosito <-mean(x2_cosito)
 S_11_cosito = (1/8)*sum((x1_cosito-xb1_cosito)^2)
 S_22_cosito = (1/8)*sum((x2_cosito-xb2_cosito)^2)
 ```
-
+```{r}
+xb1_cosito
+xb2_cosito
+S_11_cosito
+S_22_cosito
+```
 ## d.
 
 ```{r}
@@ -149,6 +165,12 @@ x1_nuevo_gorro = 4*cos(26*pi/180) - 2*sin(26*pi/180)
 x2_nuevo_gorro = -4*sin(26*pi/180) -2*cos(26*pi/180)
 
 distancia = sqrt(((x1_nuevo_gorro)^2/S_11_cosito)+((x2_nuevo_gorro)^2/S_22_cosito))
+```
+
+```{r}
+x1_nuevo_gorro
+x2_nuevo_gorro
+distancia
 ```
 
 ## e.
@@ -166,7 +188,19 @@ uno = a11*(16)
 dos = a12*(-16)
 tres = a22*4 
 
-distancia_est = sqrt(uno+ dos+ tres)
+distancia_est = sqrt(uno+dos+tres)
+```
+
+```{r}
+a
+b
+a11
+a22
+a12
+uno
+dos
+tres
+distancia_est
 ```
 
 ## R Markdown
