@@ -74,6 +74,23 @@ boxplot(a$cyl)
 
 ```
 
+## c.
+
+```{r}
+#histograma por variables
+hist(a$mpg, breaks=5)
+hist(a$cyl, breaks=2) #no tiene sentido que sean 5 intervalos, var. categorica
+hist(a$disp, breaks=5)
+hist(a$hp, breaks=4)
+hist(a$drat, breaks=5)
+hist(a$wt, breaks=5)
+hist(a$qsec, breaks=5)
+hist(a$vs, breaks=2) #no tiene sentido utilizar histograma, variable categ.
+hist(a$am, breaks=5) #no tiene sentido usar histograma, mejor utilizar diagrama de barras, var. categ.
+hist(a$gear,breaks=5) #mejor diagrama de barras, la variable es categorica
+hist(a$carb,breaks=5) #no se puede con 5 intervalos
+```
+
 ## R Markdown
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
