@@ -11,6 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ### Conceptos Previos
+```{r}
+#IMPORTANTE: Las imágenes adjuntadas deben estar guardadas 
+#en la misma carpeta en la que se encuentre el código.
+
+```
 
 ```{r}
 packages = c("dslabs", "MASS", "scatterplot3d", "car")
@@ -34,7 +39,9 @@ boxplot(olive$oleic ~ olive$region, xlab='Region', ylab='Oleic')
 
 # Punto 2
 
-## a.
+## 2a.
+
+Medidas de tendencia central.
 
 ```{r}
 #instalar libreria para la moda si no está instalada:
@@ -43,12 +50,24 @@ if(!require("modeest")){
     library(modeest)
 }
 a<-mtcars
-medias<-c()
+
+#Vector que almacena las medias estadísticas de cada una de las variables de
+#mtcars en orden, es decir, (mpg,cyl,disp,...,gear,carb)
+medias<-c() 
+
+#Vector que almacena las modas estadísticas de cada una de las variables de
+#mtcars en orden, es decir, (mpg,cyl,disp,...,gear,carb)
 modas<-list()
+
+#Vector que almacena las medianas estadísticas de cada una de las variables de
+#mtcars en orden, es decir, (mpg,cyl,disp,...,gear,carb)
 medianas<-c()
+
+#Vector que almacena las desviaciones estandar de cada una de las variables de
+#mtcars en orden, es decir, (mpg,cyl,disp,...,gear,carb)
 desviaciones<-c()
+
 for (i in seq_along(a)){
-  #Se puede mejorar esta parte
   media<-mean(a[[i]])
   medias<-c(medias,media)
   modas[[i]]<-mlv(a[[i]],method = "mfv")
@@ -57,24 +76,43 @@ for (i in seq_along(a)){
   desviaciones<-c(desviaciones,sd(a[[i]]))
 }
 
-medianas
-medias
-desviaciones
-modas
-
 ```
-
-Sí es posible calcular todas estas medidas de tendencia central puesto que son variables numericas.
-
-## b.
 
 ```{r}
-boxplot(a$mpg)
-boxplot(a$cyl)
+message("Vector de medias: ")
+medias 
+
+message("Vector de medianas: ")
+medianas
+
+message("Vector de modas: ")
+modas
+
+message("Vector de desviaciones estandar: ")
+desviaciones
 
 ```
 
-## c.
+Sí es posible calcular todas estas medidas de tendencia central puesto que son variables numericas. Sin embargo, en algunas variables como "vs", "am" no tiene sentido encontrar las medidad de tendecia central
+como la media y la desviaciones estándar pues son variables cualitativas.
+
+## 2b. 
+
+Determinar qué variable presenta valores atípicos.
+
+```{r}
+boxplot(a$hp, main="Caballos de potencia (hp)")
+boxplot(a$wt, main="Peso (wt)")
+boxplot(a$qsec, main="Tiempo a 1/4 de milla (qsec)")
+boxplot(a$carb, main="Número de carburadores (carb)")
+
+```
+
+Las variables que representan valores atípicos son: "hp": Caballos de potencia , "wt": Peso , "qsec": Tiempo a 1/4 milla , "carb": Número de carburadores. Se ha determinado que estas variables presentan valores atípicos por medio del diagrama de cajas, pues este nos permite visualizar datos que se encuentren fuera de las lineas rectas (representan valores con dispersion de 1.3 o 1.5).
+
+## 2c.
+
+Histogramas.
 
 ```{r}
 #histograma por variables
@@ -91,11 +129,20 @@ hist(a$gear,breaks=5) #mejor diagrama de barras, la variable es categorica
 hist(a$carb,breaks=5) #no se puede con 5 intervalos
 ```
 
+## 2d. 
+
+Boxplot de todas las variables
+
+```{r}
+boxplot(a, col = rainbow(ncol(trees)), main="Boxplot de todas las variables")
+```
+
 # Punto 3
 
 ```{r}
 scatterplotMatrix(~ +., data = olive, diagonal=list(method ="boxplot")) 
 ```
+
 # Punto 4
 
 ```{r}
@@ -108,7 +155,7 @@ legend(p_cuatro$xyz.convert(-3.0, 5, 14), legend = levels(olive$region), col =  
 
 # Punto 5
 
-## a.
+## 5a.
 
 ```{r}
 x1 <- c(-6, -3, -2, 1, 2, 5, 6, 8)
@@ -131,19 +178,20 @@ s22
 s12
 ```
 
-## b.
+## 5b.
 
 ```{r}
 x1_cosito = x1*cos(26*pi/180) + x2*sin(26*pi/180)
 x2_cosito = -x1*sin(26*pi/180) + x2*cos(26*pi/180)
 ```
+
 ```{r}
 x1_cosito
 
 x2_cosito
 ```
 
-## c.
+## 5c.
 
 ```{r}
 xb1_cosito <-mean(x1_cosito)
@@ -152,13 +200,15 @@ xb2_cosito <-mean(x2_cosito)
 S_11_cosito = (1/8)*sum((x1_cosito-xb1_cosito)^2)
 S_22_cosito = (1/8)*sum((x2_cosito-xb2_cosito)^2)
 ```
+
 ```{r}
 xb1_cosito
 xb2_cosito
 S_11_cosito
 S_22_cosito
 ```
-## d.
+
+## 5d.
 
 ```{r}
 x1_nuevo_gorro = 4*cos(26*pi/180) - 2*sin(26*pi/180)
@@ -173,7 +223,7 @@ x2_nuevo_gorro
 distancia
 ```
 
-## e.
+## 5e.
 
 ```{r}
 t = 26*pi/180
@@ -192,33 +242,28 @@ distancia_est = sqrt(uno+dos+tres)
 ```
 
 ```{r}
-a
-b
+
 a11
 a22
 a12
-uno
-dos
-tres
 distancia_est
 ```
 
-## R Markdown
+# Punto 6
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## a.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+##  ![](6a.PNG)
 
-```{r cars}
-summary(cars)
-```
+## b.
 
-## Including Plots
+![](6b.PNG){width="602"}
 
-You can also embed plots, for example:
+# Punto 7
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+![](Punto7.PNG)
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
