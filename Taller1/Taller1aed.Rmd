@@ -154,6 +154,7 @@ distancia = sqrt(((x1_nuevo_gorro)^2/S_11_cosito)+((x2_nuevo_gorro)^2/S_22_cosit
 ## e.
 
 ```{r}
+t = 26*pi/180
 a = (cos(t)^2)*s11 + 2*sin(t)*cos(t)*s12 + (sin(t)^2)*s22
 b = (cos(t)^2)*s22 - 2*sin(t)*cos(t)*s12 + (sin(t)^2)*s11
 
