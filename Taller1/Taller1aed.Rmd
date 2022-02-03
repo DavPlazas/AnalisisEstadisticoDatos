@@ -91,6 +91,83 @@ hist(a$gear,breaks=5) #mejor diagrama de barras, la variable es categorica
 hist(a$carb,breaks=5) #no se puede con 5 intervalos
 ```
 
+# Punto 3
+
+```{r}
+scatterplotMatrix(~ +., data = olive, diagonal=list(method ="boxplot")) 
+```
+# Punto 4
+
+```{r}
+colors <- c("#999999", "#E69F00", "#56B4E9")  
+colors <- colors[as.numeric(olive$region)]
+p_cuatro <- scatterplot3d(olive$palmitic,olive$palmitoleic,olive$linoleic,pch = 16, color=colors,xlab="Palmitic", ylab="Palmitoleic", zlab="Linoleic")
+
+legend(p_cuatro$xyz.convert(-3.0, 5, 14), legend = levels(olive$region), col =  c("#999999", "#E69F00", "#56B4E9"), pch = 16)
+```
+
+# Punto 5
+
+## a.
+
+```{r}
+x1 <- c(-6, -3, -2, 1, 2, 5, 6, 8)
+x2 <- c(-2, -3, 1, -1, 2, 1, 5, 3)
+
+
+xb1<-mean(x1)
+xb2<-mean(x2)
+
+plot(x1,x2,xlab='x_1', ylab='x_2')
+
+s11 = (1/8)*sum((x1-xb1)^2)
+s22 = (1/8)*sum((x2-xb2)^2)
+s12 =(1/8)*sum((x1-xb1)*(x2-xb2))
+```
+
+## b.
+
+```{r}
+x1_cosito = x1*cos(26*pi/180) + x2*sin(26*pi/180)
+x2_cosito = -x1*sin(26*pi/180) + x2*cos(26*pi/180)
+```
+
+## c.
+
+```{r}
+xb1_cosito <-mean(x1_cosito)
+xb2_cosito <-mean(x2_cosito)
+
+S_11_cosito = (1/8)*sum((x1_cosito-xb1_cosito)^2)
+S_22_cosito = (1/8)*sum((x2_cosito-xb2_cosito)^2)
+```
+
+## d.
+
+```{r}
+x1_nuevo_gorro = 4*cos(26*pi/180) - 2*sin(26*pi/180)
+x2_nuevo_gorro = -4*sin(26*pi/180) -2*cos(26*pi/180)
+
+distancia = sqrt(((x1_nuevo_gorro)^2/S_11_cosito)+((x2_nuevo_gorro)^2/S_22_cosito))
+```
+
+## e.
+
+```{r}
+a = (cos(t)^2)*s11 + 2*sin(t)*cos(t)*s12 + (sin(t)^2)*s22
+b = (cos(t)^2)*s22 - 2*sin(t)*cos(t)*s12 + (sin(t)^2)*s11
+
+a11 = ((cos(t)^2)/a) + ((sin(t)^2)/b)
+a22 = ((sin(t)^2)/a) + ((cos(t)^2)/b)
+a12 = ((sin(t)*cos(t))/a) - ((sin(t)*cos(t))/b)
+
+uno = a11*(16)
+dos = a12*(-16)
+tres = a22*4 
+
+distancia_est = sqrt(uno+ dos+ tres)
+```
+
 ## R Markdown
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
