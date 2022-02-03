@@ -1,0 +1,95 @@
+---
+title: <center>Taller Introductorio de AED</center> 
+
+author: "Santiago Rodriguez, David Oviedo, Germán Plazas"
+date: "28/01/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Conceptos Previos
+
+```{r}
+packages = c("dslabs", "MASS", "scatterplot3d", "car")
+## Se cargan o se instalan y cargan
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+```
+
+# Punto 1
+
+```{r}
+boxplot(olive$oleic ~ olive$region, xlab='Region', ylab='Oleic')
+```
+
+# Punto 2
+
+## a.
+
+```{r}
+#instalar libreria para la moda si no está instalada:
+if(!require("modeest")){
+    install.packages("modeest")
+    library(modeest)
+}
+a<-mtcars
+medias<-c()
+modas<-list()
+medianas<-c()
+desviaciones<-c()
+for (i in seq_along(a)){
+  #Se puede mejorar esta parte
+  media<-mean(a[[i]])
+  medias<-c(medias,media)
+  modas[[i]]<-mlv(a[[i]],method = "mfv")
+  mediana<-median(a[[i]])
+  medianas<-c(medianas,mediana)
+  desviaciones<-c(desviaciones,sd(a[[i]]))
+}
+
+medianas
+medias
+desviaciones
+modas
+
+```
+
+Sí es posible calcular todas estas medidas de tendencia central puesto que son variables numericas.
+
+## b.
+
+```{r}
+boxplot(a$mpg)
+boxplot(a$cyl)
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
