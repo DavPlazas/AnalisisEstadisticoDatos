@@ -1,0 +1,263 @@
+---
+title: "Taller 2"
+author: "Santiago Rodríguez M; Germán David Plazas C; David Alfonso Oviedo S."
+date: "20/02/2022"
+output:
+  html_document:
+    df_print: paged
+---
+
+title: <center>Taller número dos de AED</center> 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Conceptos Previos
+
+```{r}
+packages = c("dslabs", "MASS", "scatterplot3d", "car", "plot3D")
+## Se cargan o se instalan y cargan
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+
+#install.packages("plot3D")
+
+#library("plot3D")
+
+```
+
+# Punto 1
+
+## a.
+
+```{r}
+x1 <- c(9,2,6,5,8)
+x2 <- c(12,8,6,4,10)
+x3 <- c(3,4,0,2,1)
+
+matriz_medias <- rbind(mean(x1),mean(x2),mean(x3))
+
+matriz_medias
+
+```
+
+## b.
+
+```{r}
+matriz_desv <- rbind(sqrt(sum((x1-mean(x1))^2)*(1/((length(x1))))),sqrt(sum((x2-mean(x2))^2)*(1/((length(x2))))),sqrt(sum((x3-mean(x3))^2)*(1/((length(x3))))))
+
+desvx1 = sqrt(sum((x1-mean(x1))^2)*(1/((length(x1)))))
+desvx2 = sqrt(sum((x2-mean(x2))^2)*(1/((length(x2)))))
+desvx3 = sqrt(sum((x3-mean(x3))^2)*(1/((length(x3)))))
+
+matriz_desv
+
+```
+
+## c.
+
+```{r}
+covarianza <- function(vector1,vector2){
+  coov = 1/(length(vector1))*sum((vector1-mean(vector1))*(vector2-mean(vector2)))
+  return(coov)
+}
+
+covarianza(x1,x1)
+covarianza(x1,x2)
+covarianza(x1,x3)
+
+r1 <- c((covarianza(x1,x1))/(desvx1*desvx1),(covarianza(x1,x2))/(desvx1*desvx2),(covarianza(x1,x3))/(desvx1*desvx3))
+r2 <- c((covarianza(x2,x1))/(desvx2*desvx1),(covarianza(x2,x2))/(desvx2*desvx2),(covarianza(x2,x3))/(desvx2*desvx3))
+r3 <- c((covarianza(x3,x1))/(desvx3*desvx1),(covarianza(x3,x2))/(desvx3*desvx2),(covarianza(x3,x3))/(desvx3*desvx3))
+
+
+matriz_corr <- rbind(r1,r2,r3)
+
+matriz_corr
+
+```
+
+# Punto 2
+
+## a.
+
+install.packages("plot3D")
+
+library("plot3D")
+
+```{r}
+
+
+
+x_prima = c(5,1,3)
+y_prima = c(-1,3,1)
+
+x0 <- c(0, 0)
+y0 <- c(0, 0)
+z0 <- c(0, 0)
+x1 <- c(5, -1)
+y1 <- c(1, 3)
+z1 <- c(3, 1)
+cols <- c("#1B9E77", "#D95F02", "#7570B3")
+
+arrows3D(x0, y0,z0, x1, y1, z1, col = cols,
+         lwd = 2, d = 3, clab = c("Quality", "score"), 
+         main = "Arrows 3D", bty ="g", ticktype = "detailed")
+
+
+
+points3D(x0, y0, z0, add = TRUE, col="darkred", 
+         colkey = FALSE, pch = 19, cex = 1)
+
+# Add labels to the arrows
+text3D(x1, y1, z1, c("Vector x", "Vector Y"), col = cols, add=TRUE, colkey = FALSE)
+```
+
+
+## b.
+
+```{r}
+norma_x <- sqrt(sum(x_prima^2))
+norma_y <- sqrt(sum(y_prima^2))
+
+angulo = acos((x_prima%*%y_prima)/((norma_x)*(norma_y)))*(180/pi)
+
+proyec = c((y_prima%*%x_prima)/(x_prima%*%x_prima))%*%(x_prima)
+
+norma_x
+
+angulo
+
+proyec
+
+```
+
+## c.
+
+```{r}
+x_prima = c(5,1,3)
+y_prima = c(-1,3,1)
+
+x0 <- c(0, 0)
+y0 <- c(0, 0)
+z0 <- c(0, 0)
+x1 <- c(5-3, -1-1)
+y1 <- c(1-3, 3-1)
+z1 <- c(3-3, 1-1)
+cols <- c("#1B9E77", "#D95F02", "#7570B3")
+
+arrows3D(x0, y0,z0, x1, y1, z1, col = cols,
+         lwd = 2, d = 3, clab = c("Quality", "score"), 
+         main = "Arrows 3D", bty ="g", ticktype = "detailed")
+
+
+
+points3D(x0, y0, z0, add = TRUE, col="darkred", 
+         colkey = FALSE, pch = 19, cex = 1)
+
+# Add labels to the arrows
+text3D(x1, y1, z1, c("Vector x", "Vector Y"), col = cols, add=TRUE, colkey = FALSE)
+```
+
+# Punto 6
+
+## a.
+
+```{r}
+attach(mtcars)
+z_1 = c(9,5,1)
+z_2 = c(1,3,2)
+z_3 = c(0,0,0)
+plot(z_1, z_2, main="Diagrama de dispersión",
+     xlab="Variable 1 ", ylab="Variable 2", pch=19)
+
+medias = c(mean(z_1),mean(z_2))
+medias
+```
+
+## b.
+
+```{r}
+colors <- c("#999999", "#E69F00","#56B4E9")
+scatterplot3d(z_1,z_3,z_2, main="Diagrama de dispersión",xlab="Variable 1 ", ylab="",zlab ="Variable 2",pch = 16, color=colors)
+
+
+desv1 = z_1 - mean(z_1)
+desv2 = z_2 - mean(z_2)
+```
+
+
+
+
+## c.
+
+```{r}
+x0 <- c(0, 0)
+y0 <- c(0, 0)
+z0 <- c(0, 0)
+x1 <- c(4, -1)
+y1 <- c(0, 1)
+z1 <- c(-4, 0)
+cols <- c("#1B9E77", "#D95F02", "#7570B3")
+
+arrows3D(x0, y0,z0, x1, y1, z1, col = cols,
+         lwd = 3, d = 10, clab = c("Quality", "score"), 
+         main = "Arrows 3D", bty ="g", ticktype = "detailed")
+
+points3D(x0, y0, z0, add = TRUE, col="darkred", 
+         colkey = FALSE, pch = 19, cex = 1)
+
+# Add labels to the arrows
+text3D(x1, y1, z1, c("Vector x", "Vector Y"), col = cols, add=TRUE, colkey = FALSE)
+
+norma_desv1 <- sqrt(sum(desv1^2))
+norma_desv2 <- sqrt(sum(desv2^2))
+
+norma_desv1
+norma_desv2
+
+angulo_desv = acos((desv1%*%desv2)/((norma_desv1)*(norma_desv2)))*(180/pi)
+
+angulo_desv
+
+desv_s11 = norma_desv1^2/length(desv1)
+desv_s22 = norma_desv2^2/length(desv2)
+desv_s12 = desv1%*%desv2/length(desv1)
+
+k1 = c(desv_s11,desv_s12)
+k2 = c(desv_s12,desv_s22)
+
+matriz_var_desv <- rbind(k1,k2)
+matriz_var_desv
+
+corr_desv_12 = (desv_s12)/(sqrt(desv_s11)*sqrt(desv_s22))
+
+j1 = c(1,corr_desv_12)
+j2 = c(corr_desv_12,1)
+
+matriz_corr_desv <- rbind(j1,j2)
+matriz_corr_desv
+
+```
+## d.
+
+```{r}
+Varianza_generalizada = det(matriz_var_desv)
+Varianza_generalizada
+```
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
