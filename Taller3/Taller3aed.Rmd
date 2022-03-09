@@ -1,0 +1,231 @@
+---
+title: "Taller 3 AED"
+author: "Santiago Rodriguez, David Oviedo, German Plazas"
+date: "2/25/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Punto 1
+
+Encuentre los estimadores de maximo verosimilitud del vector de medias $\mu$ y la matriz de covarianzas $\Sigma$ basada en:
+\[X=
+\begin{bmatrix}
+3 & 6\\
+4 & 4\\
+5 & 7\\
+4 & 7\\
+\end{bmatrix}
+\]
+```{r}
+x1<-c(3,4,5,4)
+x2<-c(6,4,7,7)
+
+X<-cbind(x1,x2)
+x1barra<-mean(x1)
+x2barra<-mean(x2)
+
+Xbarra<-rbind(x1barra,x2barra)
+Xbarra
+
+coov<-function(x,y){
+  Sn<-(1/length(x))*sum((x-mean(x))*(y-mean(y)))
+  return(Sn)
+}
+
+
+S11<-coov(x1,x1)
+S12<-coov(x1,x2)
+Sf1<-c(S11,S12)
+
+S21<-coov(x2,x1)
+S22<-coov(x2,x2)
+Sf2<-c(S21,S22)
+
+Sigma<-rbind(Sf1,Sf2)
+Sigma
+```
+
+## Punto 2
+**(a)** Evalue $T^2$, para el test $H_0: \mu^´=[7,11]$ usando la información
+```{r}
+
+x_1 <- c(2,8,6,8)
+x_2 <- c(12,9,9,10)
+Miu_hip<-c(7,11)
+
+X <- cbind(x_1,x_2)
+
+X_MEAN <- rbind(mean(x_1),mean(x_2))
+X_MEAN
+
+x_1_cov <- c(cov(x_1,x_1),cov(x_1,x_2))
+x_2_cov <- c(cov(x_1,x_2),cov(x_2,x_2))
+
+X_COV <- rbind(x_1_cov,x_2_cov)
+X_COV
+
+X_mean_Miu_hip <- rbind(mean(x_1)-7,mean(x_2)-11)
+S_INVERSA = solve(X_COV)
+
+t(X_MEAN - Miu_hip)
+T_square = 4*t(X_mean_Miu_hip)%*%S_INVERSA%*%X_mean_Miu_hip
+T_square
+```
+
+**(b)** Especifique la distribucion de $T^2$ para la situacion en el numeral **(a)**
+```{r}
+Distribucion_F = (4-1)*2/(4-2)*qf(0.05, 2, 4-2, lower.tail=F)
+Distribucion_F
+```
+
+
+**(c)**  $T²$ es mayor a $F_{(2,2)}$ con 0.05 de confianza por lo que no se rechaza $H_0$ 
+
+**(d)** Determine $\Lambda$
+```{r}
+X_a <- rbind(x_1-mean(x_1),x_2-mean(x_2))
+X_b <- rbind(x_1-7,x_2-11)
+
+numera = det(X_a %*% t(X_a))
+denomina = det(X_b %*% t(X_b))
+
+lambda = (numera/denomina)^(4/2)
+```
+
+**(e)** Usando el Lambda de Wilk, calcule $T^2$
+```{r}
+T_square_b = ((1/sqrt(lambda))-1)*(4-1)
+```
+
+## Punto 3
+
+**(a)** Obtener un intervalo de confianza para las seis medias
+
+```{r}
+
+a<-diag(6)
+n<-61
+p<-6
+alpha<-0.05
+
+Xbarra<-c(95.52,164.38,55.69,93.39,17.98,31.13)
+
+
+s1<-c(3266.46,1343.97,731.54,1175.5,162.68,238.37)
+s2<-c(1343.97,721.91,324.25,537.35,80.17,117.73)
+s3<-c(731.54,324.25,179.28,281.17,39.15,56.8)
+s4<-c(1175.5,537.35,281.17,474.98,63.73,94.85)
+s5<-c(162.68,80.17,39.15,63.73,9.95,13.88)
+s6<-c(238.37,117.73,56.80,94.85,13.88,21.26)
+
+S<-rbind(s1,s2,s3,s4,s5,s6)
+intervalos<-list()
+
+#Importante: En este for se hace uso de la distribucion F, sin embargo, se podría
+#usar Chi cuadrado pues n-p es grande
+for (i in 1:p) {
+  exp<-sqrt((p*(n-1))/(n*(n-p))*(qf(0.05,p,n-p,lower.tail=F))*(t(a[i,])%*%S%*%a[i,]))
+  interv<-c(Xbarra[i]-exp, Xbarra[i]+exp)
+  intervalos[[i]]<-interv
+}
+
+
+#Usando chi cuadrado:
+# nivel_q<-qchisq(1-alpha,df=p)
+# for (i in 1:p){
+#   exp<-sqrt(nivel_q*(t(a[i,])%*%S%*%a[i,]))
+#   interv<-c(Xbarra[i]-exp,Xbarra[i]+exp)
+#   intervalos[[i]]<-interv
+# }
+
+variables<-c("Peso","Longitud del cuerpo (cm)", "Cuello", "Cintura", "Longitud de la cabeza", "Ancho de la cabeza")
+for (i in 1:6){
+
+  message(paste0("Intervalo de confianza para "),variables[i])
+  print(intervalos[[i]])
+  
+}
+```
+**(b)** Obtenga el intervalo de confianza grande de 95% de la elipse para el peso medio y el grosor medio
+
+```{r}
+chi <- qchisq(1-alpha,df=p) 
+
+centro <- Xbarra[c(1,4)] #centro de la elipse
+Sn2 <- S[c(1,4), c(1,4)] #covarianzas
+puntos <- 1000 #resolucion
+theta <- seq(0, 2*pi, length = puntos) #angulo theta periodo 2pi #funcion seq() genera una secuencia
+
+#transformamos para los puntos de la elipse
+r <- sqrt(chi/n)
+v <- rbind(r*cos(theta),r*sin(theta))
+z <- backsolve(chol(solve(Sn2)),v)+centro 
+#funcion backsolve() resuelve un sistema de ecuaciones lineales en (triangular superior o inferior)
+#funcion chol() realiza la factorizacion de una matriz definida positiva real 
+#funcion solve permite obtener la inversa de una matriz cuando solo se le da un argumento
+
+#Ahora calculamos el intervalo de conf. simultaneo del 95%
+
+int_conf_sup_x <- Xbarra[1]+sqrt(chi)*sqrt(S[1,1]/n)
+int_conf_inf_x <- Xbarra[1]-sqrt(chi)*sqrt(S[1,1]/n)
+
+int_conf_sup_y <- Xbarra[4]+sqrt(chi)*sqrt(S[4,4]/n)
+int_conf_inf_y <- Xbarra[4]-sqrt(chi)*sqrt(S[4,4]/n) 
+
+#ploteamos la elipse para el intervalo
+plot(t(z), type='l', main='Elipse', xlab='Weight', ylab='Girth',lty=2,col='blue')
+lines(t(z),col='blue')
+
+#ploteamos los intervalos de confianza 95%
+abline(v=int_conf_sup_x, col='blue') #lineas verticales (v)
+abline(v=int_conf_inf_x,col='blue')
+abline(h=int_conf_sup_y,col='blue') #lineas horizontales (h)
+abline(h=int_conf_inf_y,col='blue')  
+
+#ploteamos centro de la elipse
+points(centro[1], centro[2], col='red') 
+
+```
+
+**(c)** Obtenga un intervalo de Bonferroni con confianza del 95% para las seis medias de la parte **(a)**
+
+```{r}
+intervalos_bonf<-list()
+for (i in 1:6) {
+  exp<-qt(1-0.05/(2*6),df=61-1)*sqrt(1/n*(t(a[i,])%*%S%*%a[i,]))
+  interv<-c(Xbarra[i]-exp, Xbarra[i]+exp)
+  intervalos_bonf[[i]]<-interv
+}
+
+variables<-c("Peso","Longitud del cuerpo (cm)", "Cuello", "Cintura", "Longitud de la cabeza", "Ancho de la cabeza")
+for (i in 1:6){
+
+  message(paste0("Intervalo de confianza de Bonferroni para "),variables[i])
+  print(intervalos_bonf[[i]])
+
+}
+```
+**(d)** Construya el rectangulo de confianza de Bonferroni al 95% para la media del peso y la media de la cintura usando m=6. Compare este renctangulo con la elipse de confianza de la parte **(b)**
+
+```{r}
+
+int_conf_bonf_sup_x <- intervalos_bonf[[1]][2]
+int_conf_bonf_inf_x <- intervalos_bonf[[1]][1]
+
+int_conf_bonf_sup_y <- intervalos_bonf[[4]][2]
+int_conf_bonf_inf_y <- intervalos_bonf[[4]][1] 
+
+plot(t(z),type='l',xlab='Peso',ylab='Cintura',lty=2,col='blue')
+lines(t(z))
+points(centro[1],centro[2],col='red')
+
+abline(v=int_conf_bonf_sup_x, lty=3, col='red')
+abline(v=int_conf_bonf_inf_x, lty=3, col='red')
+abline(h=int_conf_bonf_sup_y, lty=3, col='red')
+abline(h=int_conf_bonf_inf_y, lty=3, col='red')
+```
+
