@@ -1,0 +1,343 @@
+---
+title: <center>Taller 5 AED</center> 
+author: "Santiago Rodríguez M., David Oviedo S., Germán Plazas C."
+date: "19/4/2022"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. 
+Determine los componentes principales poblacionales $Y_1$, $Y_2$ para la matriz de covarianza
+
+$$\boldsymbol{\Sigma}=\left[\begin{array}{ll}
+5 & 2 \\
+2 & 2
+\end{array}\right]$$
+
+También, calcule la proporción del total de la varianza poblacional
+explicada por la primera componente principal.
+
+```{r}
+S<- matrix(c(5,2,2,2), nrow = 2)
+eigen_values<-eigen(S)$values
+eigen_vectors<-eigen(S)$vectors
+
+print("Componentes principales: ")
+sprintf("Y1 = %f X1 + %f X2", eigen_vectors[1,1], eigen_vectors[2,1])
+sprintf("Y2 = %f X1 + %f X2", eigen_vectors[1,2], eigen_vectors[2,2])
+
+
+#b.) 
+temp<-eigen_values[1]/sum(eigen_values)
+
+sprintf('Proporción de la varianza explicada por la primera componente principal: %f',temp)
+
+```
+
+# 2.
+
+Convierta la matriz de covarianza del ejercicio 1 a una matriz de
+correlación $\boldsymbol{\rho}$.
+
+**(a)** Determine las componentes principales $Y_1$, $Y_2$ de
+$\boldsymbol{\rho}$ y encuentre la proporción del total de la varianza
+poblacional explicada por $Y_1$
+
+```{r}
+corr <- matrix(c(1,0.63,0.63,1),nrow = 2)
+
+eigenvalues_corr <- eigen(corr)$values
+eigenvectors_corr <- eigen(corr)$vectors
+
+
+print("Componentes principales: ")
+sprintf("Y1 = %f Z1 + %f Z2", eigenvectors_corr[1,1], eigenvectors_corr[2,1])
+sprintf("Y2= %f Z1 + %f Z2", eigenvectors_corr[1,2], eigenvectors_corr[2,2])
+
+
+#Luego, la componente principal de Y1 = (0.7071)X1 - (0.7071)X2
+#Luego, la componente principal de Y2 = (0.7071)X1 +(0.7071)X2
+
+prop_pob = eigenvalues_corr[1]/sum(eigenvalues_corr)
+sprintf('Proporción de la varianza explicada por la primera componente principal: %f',prop_pob)
+#El 81% de la población se explica por Y1
+```
+
+**(b)** Compare las componentes calculadas en la parte **(a)** con las
+obtenidas en el ejercicio 1
+
+```{r}
+
+print("Componentes principales parte (a) (Estandarizado): ")
+sprintf("Y1 = %f Z1 + %f Z2", eigenvectors_corr[1,1], eigenvectors_corr[2,1])
+sprintf("Y2= %f Z1 + %f Z2", eigenvectors_corr[1,2], eigenvectors_corr[2,2])
+
+cat("\nComponentes principales Ejercicio 1: \n")
+sprintf("Y1 = %f X1 + %f X2", eigen_vectors[1,1], eigen_vectors[2,1])
+sprintf("Y2 = %f X1 + %f X2", eigen_vectors[1,2], eigen_vectors[2,2])
+```
+
+No son iguales, al tener varianzas diferentes no deberán tener las
+mismas componentes-
+
+**(c)** Calcule las correlaciones
+$\rho_{Y_{1}, Z_{1}}, \rho_{Y_{1}, Z_{2}}$, and $\rho_{Y_{2}, Z_{1}}$
+
+```{r}
+p_y1_z1 <- eigenvectors_corr[1,1]*sqrt(eigenvalues_corr[1])
+p_y1_z2 <- eigenvectors_corr[2,1]*sqrt(eigenvalues_corr[1])
+p_y2_z1 <- eigenvectors_corr[1,2]*sqrt(eigenvalues_corr[2])
+
+p_y1_z1
+p_y1_z2
+p_y2_z1
+```
+
+# 3.
+
+Se tiene los datos en $X_1 = $ ventas y $X_2 = $ ganancias para las
+diez compañias más grandes en el mundo. Sabemos que
+
+$$
+\overline{\mathbf{x}}=\left[\begin{array}{r}
+155.60 \\
+14.70
+\end{array}\right], \quad \mathbf{S}=\left[\begin{array}{rr}
+7476.45 & 303.62 \\
+303.62 & 26.19
+\end{array}\right]
+$$ 
+**(a)** Determine las componentes principales muestrales y sus
+varianzas.
+
+```{r}
+S3 <- matrix(c(7476.45,303.62,303.62,26.19), nrow = 2)
+eigen_values3<-eigen(S3)$values
+eigen_vectors3<-eigen(S3)$vectors
+
+print("Componentes principales: ")
+sprintf("Y1 = %f X1 + %f X2", eigen_vectors3[1,1], eigen_vectors3[2,1])
+sprintf("Y2 = %f X1 + %f X2", eigen_vectors3[1,2], eigen_vectors3[2,2])
+
+print('Varianza de cada componente principal')
+eigen_values3[1]
+eigen_values3[2]
+
+```
+
+**(b)** Encuentra la proporción del total de la varianza muestral
+explicada por $\hat{y_1}$
+
+```{r}
+prop3 <- eigen_values3[1]/sum(eigen_values3)
+sprintf('Proporción de la varianza explicada por la primera componente principal: %f',prop3)
+```
+
+**(c)** Calcule los coeficientes de correlacion
+$r_{\hat{y}{1}, x{k}}, k=1,2$. Qué interpetación le puede dar a la
+primera componente principal?
+
+```{r}
+p_y1_x1 <- (eigen_vectors3[1]*sqrt(eigen_values3[1]))/sqrt(S3[1,1])
+p_y1_x2 <- (eigen_vectors3[2]*sqrt(eigen_values3[1]))/sqrt(S3[2,2])
+p_y1_x1
+p_y1_x2
+```
+
+#4. 
+Convierta la matriz de covarianza S del ejercicio 3 a una matriz de correlación
+muestral.
+
+**(a)** Encuentre los componentes principales muestrales $\hat{y_1}$ , $\hat{y_2}$
+y sus varianzas
+
+```{r}
+R4<-cov2cor(S3)
+eigen_values4<-eigen(R4)$values
+eigen_vectors4<-eigen(R4)$vectors
+
+print("Componentes principales (Estandarizados): ")
+sprintf("Y1 = %f Z1 + %f Z2", eigen_vectors4[1,1], eigen_vectors4[2,1])
+sprintf("Y2 = %f Z1 + %f Z2", eigen_vectors4[1,2], eigen_vectors4[2,2])
+
+print('Varianza de cada componente principal')
+eigen_values4[1]
+eigen_values4[2]
+```
+
+**(b)** Encuentra la proporción del total de la varianza muestral
+explicada por $\hat{y_1}$
+
+```{r}
+prop4 <- eigen_values4[1]/sum(eigen_values4)
+sprintf('Proporción de la varianza explicada por la primera componente principal: %f',prop4)
+```
+
+**(c)** Calcule los coeficientes de correlacion
+$r_{\hat{y}{1}, z{k}}, k=1,2$. Interprete $\hat{y_1}$
+
+```{r}
+p_y1_z1 <- (eigen_vectors4[1]*sqrt(eigen_values4[1]))
+p_y1_z2 <- (eigen_vectors4[2]*sqrt(eigen_values4[1]))
+p_y1_z1
+p_y1_z2
+```
+En conclusión, cuando los valores de la matriz X aumentan, la proyección de la primera componente principal también aumenta. Al ser iguales los valores de las variables inferimos que estos valores tienen el mismo peso en la componente principal.
+
+
+**(d)** Compara las componentes obtenidas en la parte **(a)** con las obtenidas 
+en el ejercicio 3**(a)**. Crees que es mejor determinar las componentes principales
+de la matriz de covarianzas muestrales o la matriz de correlación muestral. Explique
+
+```{r}
+
+print("Componentes principales parte (a) (Estandarizado): ")
+sprintf("Y1 = %f Z1 + %f Z2", eigen_vectors4[1,1], eigen_vectors4[2,1])
+sprintf("Y2 = %f Z1 + %f Z2", eigen_vectors4[1,2], eigen_vectors4[2,2])
+
+cat("\nComponentes principales Ejercicio 3a: \n")
+sprintf("Y1 = %f X1 + %f X2", eigen_vectors3[1,1], eigen_vectors3[2,1])
+sprintf("Y2 = %f X1 + %f X2", eigen_vectors3[1,2], eigen_vectors3[2,2])
+```
+
+En este caso es mejor hayar los componentes principales sin haber estandarizado la matriz de covarianza, ya que tienen una mayor varianza que permite ver como se comportan los datos Nótese que la primera componente sin estandarizar explica el 99% de la varianza de los datos de la muestra, que es mucho mayor que el 84% de la estandarizada.
+  
+
+#5. 
+
+Las tasas de rendimiento semanales de cinco acciones que cotizan en la Bolsa 
+de Valores de Nueva York se dan en la Tabla 1
+
+
+Week | JP Morgan | Citibank | Wells Fargo | Royal Dutch Shell | Exxon Mobil 
+:-----:|:-----:|:----:|:-----:|:----:|:-----:|
+1|0.01303|-0.00784|-0.00319|-0.04477|0.00522|
+2|0.00849|0.01669|-0.00621|0.01196| 0.01349 |
+3|-0.01792|-0.00864 |0.01004 |0   |-0.00614|
+4|0.02156|-0.00349|0.01744|-0.02859|-0.00695 |
+5|0.01082|0.00372|-0.01013|0.02919|0.04098 |
+6|0.01017|-0.01220|-0.00838|0.01371| 0.00299 |
+7|0.01113|0.02800|0.00807|0.03054|0.00323 |
+8|0.04848|-0.00515|0.01825|0.00633| 0.00768 |
+9|-0.03449|-0.01380|-0.00805|-0.02990|-0.01081 |
+10|-0.00466|0.02099|-0.00608|-0.02039| -0.01267 |
+.|.|.|.|.| . |
+.|.|.|.|.| . |
+.|.|.|.|.| . |
+
+Table 1: Stock-Price Data (Tasa semanal de retorno)
+
+**(a)** Construya la matriz de covarianza muestral $\textbf{S}$ y encuentre 
+las componentes principales muestrales. 
+
+```{r}
+stock_data = read.delim("/Users/David/Downloads/stock_data.txt", sep = '\t')
+stock_data
+
+S5 <- cov(stock_data)
+S5
+
+eigen_values5<-eigen(S5)$values
+eigen_vectors5<-eigen(S5)$vectors
+
+cat("\nComponentes principales: \n")
+sprintf("Y1 = %f X1 + %f X2 + %f X3 + %f X4 + %f X5", eigen_vectors5[1,1], eigen_vectors5[2,1],eigen_vectors5[3,1],eigen_vectors5[4,1],eigen_vectors5[5,1])
+sprintf("Y2 = %f X1 + %f X2 + %f X3 + %f X4 + %f X5", eigen_vectors5[1,2], eigen_vectors5[2,2],eigen_vectors5[3,2],eigen_vectors5[4,2],eigen_vectors5[5,2])
+sprintf("Y3 = %f X1 + %f X2 + %f X3 + %f X4 + %f X5", eigen_vectors5[1,3], eigen_vectors5[2,3],eigen_vectors5[3,3],eigen_vectors5[4,3],eigen_vectors5[5,3])
+sprintf("Y4 = %f X1 + %f X2 + %f X3 + %f X4 + %f X5", eigen_vectors5[1,4], eigen_vectors5[2,4],eigen_vectors5[3,4],eigen_vectors5[4,4],eigen_vectors5[5,4])
+sprintf("Y5 = %f X1 + %f X2 + %f X3 + %f X4 + %f X5", eigen_vectors5[1,5], eigen_vectors5[2,5],eigen_vectors5[3,5],eigen_vectors5[4,5],eigen_vectors5[5,5])
+
+print('Varianza de cada componente principal')
+eigen_values5[1]
+eigen_values5[2]
+eigen_values5[3]
+eigen_values5[4]
+eigen_values5[5]
+
+
+```
+**(b)** Determine la proporción del total de la varianza muestral explicado por las tres primeras componentes principales.
+
+```{r}
+
+prop51 <- eigen_values5[1]/sum(eigen_values5)
+prop52 <- eigen_values5[2]/sum(eigen_values5)
+prop53 <- eigen_values5[3]/sum(eigen_values5)
+sprintf('Proporción de la varianza explicada por la primera componente principal: %f',prop51)
+sprintf('Proporción de la varianza explicada por la segunda componente principal: %f',prop52)
+sprintf('Proporción de la varianza explicada por la tercera componente principal: %f',prop53)
+```
+
+La variabilidad capturada por estas tres primeras componentes es:
+
+```{r}
+propt<-(eigen_values5[1]+eigen_values5[2]+eigen_values5[3])/(sum(eigen_values5))
+propt
+```
+**(c)** Dados los resultados anteriormente, crees que los datos de las tasas 
+de rendimiento de las acciones se puede resumir en menos de cinco dimensiones?
+
+Sí, pues como observamos en la variabilidad capturada por las tres primeras 
+componentes, ya se abarca aproximadamente un 89.9% de los datos.
+
+
+#6.
+
+```{r}
+census_tract <- read.delim("/Users/David/Downloads/census_tract.txt", sep = '\t')
+census_tract
+
+census_tract[,5]<-census_tract[,5]*10
+
+S6 <- cov(census_tract)
+S6
+```
+**(b)**
+```{r}
+eigen_values6<-eigen(S6)$values
+eigen_vectors6<-eigen(S6)$vectors
+
+pairs<-list()
+for (i in 1:length(eigen_values6)){
+  aux<-list(eigen_values6[i])
+  temp<-list(eigen_vectors6[,i])
+  pairs[[i]]<-append(aux,temp)
+}
+
+cat("\n eigenvalue-eigenvector pairs: \n")
+pairs
+  
+
+cat("\nComponentes principales: \n")
+sprintf("Y1 = %f X1 + %f X2 + %f X3 + %f X4 + %f X5", eigen_vectors6[1,1], eigen_vectors6[2,1],eigen_vectors6[3,1],eigen_vectors6[4,1],eigen_vectors6[5,1])
+sprintf("Y2 = %f X1 + %f X2 + %f X3 + %f X4 + %f X5", eigen_vectors6[1,2], eigen_vectors6[2,2],eigen_vectors6[3,2],eigen_vectors6[4,2],eigen_vectors6[5,2])
+
+
+print('Varianza de cada componente principal')
+eigen_values6[1]
+eigen_values6[2]
+
+
+```
+
+**(c)**
+```{r}
+
+prop61 <- eigen_values6[1]/sum(eigen_values6)
+prop62 <- eigen_values6[2]/sum(eigen_values6)
+sprintf('Proporción de la varianza explicada por la primera componente principal: %f',prop61)
+sprintf('Proporción de la varianza explicada por la segunda componente principal: %f',prop62)
+
+
+p_y1_x1 <- (eigen_vectors6[1]*sqrt(eigen_values6[1]))/sqrt(S6[1,1])
+p_y1_x2 <- (eigen_vectors6[2]*sqrt(eigen_values6[1]))/sqrt(S6[2,2])
+p_y1_x1
+p_y1_x2
+```
+
