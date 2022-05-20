@@ -104,8 +104,9 @@ table(train3$Species, predicciones3$class,
       dnn = c("Especie real ", "Predicción Especie QDA"))
 
 train3_error <- mean(train3$Species != predicciones3$class) * 100
-paste("trainig_error=",train3_error,"%") 
+paste("Error de clasificación=",train3_error,"%") 
 
 #Cómo se puede evidenciar el error es del 2.22% en este caso
-#por lo que podemos concluir que 
+#por lo que podemos concluir que para este conjunto de datos, el mejor método de clasificación 
+#resulta ser LDA (discriminante lineal) 
 
