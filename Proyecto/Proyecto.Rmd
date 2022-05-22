@@ -1,0 +1,126 @@
+---
+title: "Proyecto"
+author: "Santiago Rodríguez M. , David Oviedo S. , Germán Plazas C."
+date: "27/5/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r warning=FALSE}
+library(readr)
+library('ggplot2')
+library(car)
+library (lmtest)
+library(MASS)
+Dataset_Life_expectancy <- read_delim("C:/Users/ASUS X512F/iCloudDrive/MACC UR/QUINTO SEMESTRE/ANALISIS ESTADISTICO DE DATOS/pruebax.csv", 
+                                                 delim = ";", escape_double = FALSE, col_types = cols(Status = col_character(), 
+                                                                                                      `percentage expenditure` = col_number()), 
+                                                 trim_ws = TRUE)
+head(Dataset_Life_expectancy)
+
+Train_dataset <- read_delim("C:/Users/ASUS X512F/iCloudDrive/MACC UR/QUINTO SEMESTRE/ANALISIS ESTADISTICO DE DATOS/Train.csv", 
+    delim = ";", escape_double = FALSE, col_types = cols(Status = col_character(), 
+        `percentage expenditure` = col_number()), 
+    trim_ws = TRUE)
+
+Test_dataset <- read_delim("C:/Users/ASUS X512F/iCloudDrive/MACC UR/QUINTO SEMESTRE/ANALISIS ESTADISTICO DE DATOS/test.csv", 
+    delim = ";", escape_double = FALSE, col_types = cols(Status = col_character(), 
+        `percentage expenditure` = col_number()), 
+    trim_ws = TRUE)
+
+
+
+
+No_Desarrollados= Dataset_Life_expectancy[Dataset_Life_expectancy$Status=="0",]
+
+Desarrollados= Dataset_Life_expectancy[Dataset_Life_expectancy$Status=="1",]
+```
+
+
+# Introducción
+
+
+# PCA
+
+```{r warning=FALSE}
+
+```
+
+
+# Regresión lineal.
+
+En busca de identificar las diferencias entre poblaciones de países desarrollados y en desarrollo, y a su vez, identificar las variables que más afectan la expectativa de vida, realizamos algunas Regresiones lineales.
+
+Al pasar de los años, la expectativa de vida ha ido cambiando dependiendo de la situación de desarrollo de los países. Realizaremos una regresión lineal según si el país es desarrollado o está en desarrollo.
+```{r warning=FALSE}
+modelo1 <- lm(No_Desarrollados$`Life expectancy` ~ No_Desarrollados$Year)
+plot(No_Desarrollados$Year, No_Desarrollados$`Life expectancy`, pch=21, bg="blue", ylab= "Expectativa de vida", 
+     xlab="Año", main = "Expectativa de vida de países en desarrollo")
+
+abline(modelo1, col="red") 
+
+modelo2 <- lm(Desarrollados$`Life expectancy` ~ Desarrollados$Year)
+
+plot(Desarrollados$Year, Desarrollados$`Life expectancy`, pch=21, bg="blue", ylab= "Expectativa de vida", 
+     xlab="Año", main = "Expectativa de vida de países desarrollados")
+
+abline(modelo2, col="red") 
+
+```
+
+Como se pueden ver en las gráficas, la expectativa de vida en países desarrollados es mayor a las de los países en desarollo. Las rectas de cada gráfica se posicionan, diferenciando así este valor entre las poblaciones. En la siguiente gráfica, podemos ver esta comparativa de las dos poblaciones. El valor "0" representa a los países en desarrollo, mientras que "1", representa la población contraria. 
+
+```{r warning=FALSE}
+ggplot(data=Dataset_Life_expectancy,mapping=aes(Year,`Life expectancy`,color=Status))+geom_point()+geom_smooth(method="lm",se=FALSE)+labs(title="Expectativa de vida entre el año 2000 y el año 2015")
+
+```
+
+
+
+```{r warning=FALSE}
+reg_mod <- lm(`Life expectancy` ~ `Adult Mortality`+ `infant deaths` + Alcohol + `percentage expenditure`+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
+summary(reg_mod)
+avPlots(reg_mod)
+```
+
+# Clasificación de poblaciones.
+
+
+A continuación, realizaremos un modelo para clasificar poblaciones segun su desarrollo y continente. Veremos, depués de partir los datos, que tan equivocado puede llegar a ser el modelo después de creado,
+
+```{r warning=FALSE}
+mdl1<- lda(`Status` ~ `Adult Mortality`+ `Life expectancy`+`infant deaths` + Alcohol + `percentage expenditure`+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
+
+testeando_1 <- predict(object = mdl1, Test_dataset)
+table(Test_dataset$Status, testeando_1$class, dnn = c("PoblaciÃ³n", "PredicciÃ³n poblaciÃ³n"))
+
+error1 <- (24/395)
+cat("\nError del modelo: \n")
+sprintf("error: %f", error1 *100) #porciento
+
+mdl2<- lda(`continent` ~ `Adult Mortality`+ `Life expectancy`+`infant deaths` + Alcohol + `percentage expenditure`+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
+
+testeando_2 <- predict(object = mdl2, Test_dataset)
+table(Test_dataset$continent, testeando_2$class, dnn = c("PoblaciÃ³n", "PredicciÃ³n poblaciÃ³n"))
+
+error2 <- (81/395)
+cat("\nError del modelo: \n")
+sprintf("error: %f", error2 *100) #porciento
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
