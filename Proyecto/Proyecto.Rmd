@@ -46,8 +46,51 @@ Desarrollados= Dataset_Life_expectancy[Dataset_Life_expectancy$Status=="1",]
 
 # PCA
 
-```{r warning=FALSE}
+```{r PCA}
+#Realizamos PCA 
+r<-na.omit(pruebax)
 
+p2<-princomp(r[,-c(1,2,3,ncol(r))])
+str(p2)
+
+#eigenvalues
+p2$sd^2
+
+#sqrt of eigenvalues
+p2$sdev
+
+#eigenvectors
+p2$loadings 
+
+var_explained = p2$sdev^2 / sum(p2$sdev^2)
+
+``` 
+
+```{r Scree plot}
+library(factoextra) 
+fviz_eig(p2)
+
+```
+```{r PCA plots}
+
+library(ggfortify)
+pcomp_plot <- autoplot(p2, data = r,colour="Country")
+pcomp_plot
+
+pcomp_plot <- autoplot(p2, data = r,colour="continent")
+pcomp_plot
+
+pcomp_plot <- autoplot(p2, data = r,colour="Status")
+pcomp_plot
+```
+```{r Matriz de correlaciones}
+
+library(ggcorrplot)
+j <- r[,-c(1,2,3,ncol(r))]
+corr <- round(cor(j), 1)
+
+ggcorrplot(corr, hc.order = TRUE,
+           lab = TRUE)
 ```
 
 
