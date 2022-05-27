@@ -2,13 +2,12 @@
 title: "Proyecto"
 author: "Santiago Rodríguez M. , David Oviedo S. , Germán Plazas C."
 date: "27/5/2022"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 
 ```{r warning=FALSE}
 library(readr)
@@ -16,18 +15,36 @@ library('ggplot2')
 library(car)
 library (lmtest)
 library(MASS)
-Dataset_Life_expectancy <- read_delim("C:/Users/ASUS X512F/iCloudDrive/MACC UR/QUINTO SEMESTRE/ANALISIS ESTADISTICO DE DATOS/pruebax.csv", 
-                                                 delim = ";", escape_double = FALSE, col_types = cols(Status = col_character(), 
-                                                                                                      `percentage expenditure` = col_number()), 
-                                                 trim_ws = TRUE)
-head(Dataset_Life_expectancy)
+library(readxl)
 
-Train_dataset <- read_delim("C:/Users/ASUS X512F/iCloudDrive/MACC UR/QUINTO SEMESTRE/ANALISIS ESTADISTICO DE DATOS/Train.csv", 
+
+#-----------------------------------------------
+#IMPORTANTE: Seleccionar el archivo pruebax.xlsx
+#-----------------------------------------------
+Dataset_Life_expectancy <- read_excel(file.choose(), col_types = c("text", 
+     "numeric", "text", "numeric", "numeric", 
+     "numeric", "numeric", "numeric", "numeric", 
+     "numeric", "numeric", "numeric", "numeric", 
+     "numeric", "numeric", "numeric", "numeric", 
+     "numeric", "numeric", "numeric", "numeric", 
+     "numeric", "text"))
+
+
+
+
+
+#---------------------------------------------
+#IMPORTANTE: Seleccionar el archivo train.csv
+#---------------------------------------------
+Train_dataset <- read_delim(file.choose(), 
     delim = ";", escape_double = FALSE, col_types = cols(Status = col_character(), 
         `percentage expenditure` = col_number()), 
     trim_ws = TRUE)
 
-Test_dataset <- read_delim("C:/Users/ASUS X512F/iCloudDrive/MACC UR/QUINTO SEMESTRE/ANALISIS ESTADISTICO DE DATOS/test.csv", 
+#--------------------------------------------
+#IMPORTANTE: Seleccionar el archivo test.csv
+#--------------------------------------------
+Test_dataset <- read_delim(file.choose(), 
     delim = ";", escape_double = FALSE, col_types = cols(Status = col_character(), 
         `percentage expenditure` = col_number()), 
     trim_ws = TRUE)
@@ -40,58 +57,176 @@ No_Desarrollados= Dataset_Life_expectancy[Dataset_Life_expectancy$Status=="0",]
 Desarrollados= Dataset_Life_expectancy[Dataset_Life_expectancy$Status=="1",]
 ```
 
-
 # Introducción
 
+En la actualidad, la esperanza de vida es un tema de interés para los países y el mundo, teniendo en cuenta las diferentes enfermedades y características de cada región. La esperanza mide el número promedio de años de vida de las personas según el contexto de las regiones. El proyecto que se desea desarrollar consiste en el estudio de algunas variables claves en la expectativa de vida de las personas. Todas estas variables se relacionan con la demografía y la salud. Esta información podría ser útil para que los países y el mundo conozcan los factores que más favorecen o apoyan a la población.
+
+Por ejemplo, en Estados Unidos, la expectativa de vida es de 76.6 años, la cual se ha visto afectada por la pandemia del COVID-19, factores de obesidad y enfermedades cardiacas. En la base de datos que se presenta a continuación, aparecen varios datos clave para el estudio de nuestro proyecto, con el fin de obtener conclusiones que aporten al estudio demográfico.
+
+# Descripcion de la base de datos
+
+El depósito de datos del Observatorio Mundial de la Salud (GHO) perteneciente a la Organización Mundial de la Salud (OMS), realiza anualmente un seguimiento del estado de salud y de muchos otros factores relacionados para todos los países. De este seguimiento se ponen a disposición del público todos los datos obtenidos con el fin de analizar el estado de salud a nivel mundial.
+
+Para este conjunto de datos en particular, se tiene una recopilación de datos que comprenden desde el año 2000 hasta el 2015, relacionados con la esperanza de vida en los 193 países miembros de las Naciones Unidas. Todos estos datos han sido coleccionados del repositorio de datos de la OMS y al ser estos datos oficiales, no se encontraron errores evidentes.
+
+Los archivos de datos individuales por país se han fusionado en un único conjunto de datos en el cual analizaremos en general. En la inspección visual inicial de los datos se evidenciaron algunos datos faltantes. Con ayuda de R y el comando missmap, los resultados indicaron que la mayoría de los datos que faltaban eran los de población, hepatitis B y del PIB. Los datos que faltaban eran de países menos conocidos como Vanuatu, Tonga, Togo, Cabo Verde, etc. Encontrar todos los datos para estos países fue difícil y, por lo tanto, se decidió que excluir estos países del conjunto de datos del modelo final.
+
+El conjunto de datos final con el que se trabajará consta de 22 columnas y 2938 filas, y a su vez cuenta con 20 variables de predicción. De estas variables de predicción se pueden obtener distintas conclusiones y perspectivas en varias categorías que abarcan factores relacionados con la inmunización, factores sobre la mortalidad, factores económicos y factores sociales.
+
+# Variables
+
+*-*  Country:   Variable de tipo cualitativa. Por medio de esta, esperamos poder clasificar los resultados dependiendo del país.
+
+*-* Year:   Variable de tipo cuantitativa. Este valor representa el año en el que se realizó una medición especifica. Varia entre los años 2001 y 2015.
+
+*-* Status:   Variable de tipo cualitativa. Indica si un país es desarrollado ó no lo es.
+
+*-* Life expectancy: Variable de tipo cuantitativa. Mide la expectativa de vida en años.
+
+*-* Adult Mortality: Variable cuantitativa. Tasa de Mortalidad en adultos de ambos sexos. Es medida entre los 15 y los 60 años por cada 1000 habitantes.
+
+*-* Infant deaths: Variable cuantitativa. Número de muertes infantiles por cada 1000 habitantes.
+
+*-* Alcohol: Variable cuantitativa. Consumo per cápita registrado en personas mayores a 15 años (Medida en litros).
+
+*-* Percentage expenditure: Variable cuantitativa. Porcentaje de gasto en salud con respecto al Producto Interno Bruto per cápita.
+
+*-* Hepatitis B: Variable cuantitativa. Porcentaje de Cobertura en vacunación contra la hepatitis B entre niños de 1 año.
+
+*-* Measles: Variable cualitativa. Numero de casos reportados por Sarampión. Es medida por cada 1000 habitantes.
+
+*-* BMI: Variable cuantitativa. Indíce de masa corporal (razón que asocia la masa y la talla de una persona).
+
+*-* Under-five deaths: Variable cuantitativa. Número de muertes en niños menores a cinco años por cada mil habitantes.
+
+*-* Polio: Variable cuantitativa. Porcentaje de Cobertura en vacunación contra la poliomielitis entre niños de 0 a 6 años.
+
+*-* Total expenditure: Variable cuantitativa. Porcentaje de Gasto del gobierno en salud con respecto al gasto total del gobierno.
+
+*-* Diphtheria: Variable cuantitativa. Porcentaje de Cobertura en vacunación contra la Difteria entre niños de 0 a 6 años.
+
+*-* HIV/AIDS: Variable cuantitativa. Porcentaje de Cobertura en vacunación contra el sida/VIH entre niños de 0 a 6 año.
+
+*-* GDP: Variable cuantitativa. Producto interno bruto. Medido en dolares.
+
+*-* Population: Variable cuantitativa. Población de un país.
+
+*-*Thinness 10-19 years: Variable cuantitativa. Porcentaje de delgadez entre jovenes de 10 y 19 años.
+
+*-* Thinness 5-9 years: Variable cuantitativa. Porcentaje de delgadez entre niños de 5 y 9 años.
+
+*-* Income composition of resources: Variable cuantitativa. Composición del ingreso de los recursos (índice).
+
+*-* Schooling: Variable cuantitativa. Número de años de escolarización (promedio).
+
+A continuación vamos a realizar una descripción de los datos por medio de la función pair plot en r. En la parte superior nos mostrará la correlación entre las variables, en el inferior, los diagramas de dispersión entre las variables y en la diagonal los gráficos de densidad correspondientes a variables. Es importante aclarar que para este análisis descartamos las variables "Country", "Year", "Status" pues son cualitativas. Además,
+clasificamos los datos por continente. 
+
+```{r Intro}
+
+#install.packages("ggplot2") 
+#install.packages("GGally")
+
+library("ggplot2")
+library("GGally")                     
+
+#Cargar el dataset
+
+#-------------------------------------------------
+#IMPORTANTE: Seleccionar el archivo Data_set.csv 
+#------------------------------------------------
+Data_set <- read_delim(file.choose(), 
+                       ";", escape_double = FALSE, trim_ws = TRUE)
+#View(Data_set)
+Data_set<-na.omit(Data_set)
+
+#library(readr)
+#Data_set <- read_delim("MACC/Data_set.csv", 
+#                       ";", escape_double = FALSE, trim_ws = TRUE)
+
+
+#View(Data_set)
+Data_set<-na.omit(Dataset_Life_expectancy)
+
+ggpairs(Data_set, columns=4:7, aes(color=continent,alpha=0.5),lower = list(continuous="smooth"))
+ggpairs(Data_set, columns=9:12, aes(color=continent,alpha=0.5),lower = list(continuous="smooth"))
+ggpairs(Data_set, columns=13:16, aes(color=continent,alpha=0.5),lower = list(continuous="smooth"))
+ggpairs(Data_set, columns=19:22, aes(color=continent,alpha=0.5),lower = list(continuous="smooth"))
+
+
+
+```
+
+```{r Matriz de correlaciones}
+library(ggcorrplot)
+r<-na.omit(Data_set)
+j <- r[,-c(1,2,3,ncol(r))]
+corr <- round(cor(j), 1)
+ggcorrplot(corr, hc.order = TRUE,
+           lab = FALSE)
+```
 
 # PCA
 
+Utilizamos el análisis de componentes principales (PCA) para poder reducir la dimensionalidad de nuestros datos, perdiendo la menor cantidad de información posible. Ya que cuando contamos con un gran número de variables cuantitativas posiblemente correlacionadas (indicativo de existencia de información redundante), PCA permite reducirlas a un número menor de variables transformadas (componentes principales) que expliquen gran parte de la variabilidad de los datos. 
+
+Cada dimensión o componente principal generada por PCA será una combinación lineal  de las variables originales.
+
+
 ```{r PCA}
 #Realizamos PCA 
-r<-na.omit(pruebax)
-
+r <-na.omit(Dataset_Life_expectancy)
 p2<-princomp(r[,-c(1,2,3,ncol(r))])
-str(p2)
+#str(p2)
+prcomp(r[,-c(1,2,3,ncol(r))])
+
+#EXPLICAR PRCOMP
+
 
 #eigenvalues
 p2$sd^2
-
 #sqrt of eigenvalues
 p2$sdev
-
 #eigenvectors
-p2$loadings 
-
-var_explained = p2$sdev^2 / sum(p2$sdev^2)
-
-``` 
+#p2$loadings 
+```
 
 ```{r Scree plot}
 library(factoextra) 
 fviz_eig(p2)
-
 ```
+
+Obtenemos que con dos componentes principales podemos explicar casi el 100% de los datos
+
 ```{r PCA plots}
-
+#install.packages("ggfortify")
 library(ggfortify)
-pcomp_plot <- autoplot(p2, data = r,colour="Country")
-pcomp_plot
-
 pcomp_plot <- autoplot(p2, data = r,colour="continent")
 pcomp_plot
-
 pcomp_plot <- autoplot(p2, data = r,colour="Status")
 pcomp_plot
 ```
-```{r Matriz de correlaciones}
 
-library(ggcorrplot)
-j <- r[,-c(1,2,3,ncol(r))]
-corr <- round(cor(j), 1)
+Los Biplots son un tipo de gráfico exploratorio. El biplot aproxima la distribución de una muestra multivariante en un espacio de dimensión dos.  Un biplot permite mostrar gráficamente la información de las filas (observaciones) y las columnas (variables) de una matriz de datos multivariantes
 
-ggcorrplot(corr, hc.order = TRUE,
-           lab = TRUE)
+
+```{r Biplot}
+
+library(devtools)
+library(factoextra)
+
+
+p3<-princomp(r[,-c(1,2,3,5,6,8,9,10,12,13,15,17,18,ncol(r))])
+fviz_pca_biplot(p3, axes = c(1, 2), geom = c("point"), addEllipses = TRUE, ellipse.level = 0.95,
+                habillage = r$continent)
+
+
+
 ```
+
+
+El PCA también sirve como herramienta para la visualización de datos, es por esto que podemos realizar las siguientes gráficas explicativas.
+
 
 
 # Regresión lineal.
@@ -99,6 +234,7 @@ ggcorrplot(corr, hc.order = TRUE,
 En busca de identificar las diferencias entre poblaciones de países desarrollados y en desarrollo, y a su vez, identificar las variables que más afectan la expectativa de vida, realizamos algunas Regresiones lineales.
 
 Al pasar de los años, la expectativa de vida ha ido cambiando dependiendo de la situación de desarrollo de los países. Realizaremos una regresión lineal según si el país es desarrollado o está en desarrollo.
+
 ```{r warning=FALSE}
 modelo1 <- lm(No_Desarrollados$`Life expectancy` ~ No_Desarrollados$Year)
 plot(No_Desarrollados$Year, No_Desarrollados$`Life expectancy`, pch=21, bg="blue", ylab= "Expectativa de vida", 
@@ -115,37 +251,75 @@ abline(modelo2, col="red")
 
 ```
 
-Como se pueden ver en las gráficas, la expectativa de vida en países desarrollados es mayor a las de los países en desarollo. Las rectas de cada gráfica se posicionan, diferenciando así este valor entre las poblaciones. En la siguiente gráfica, podemos ver esta comparativa de las dos poblaciones. El valor "0" representa a los países en desarrollo, mientras que "1", representa la población contraria. 
+Como se pueden ver en las gráficas, la expectativa de vida en países desarrollados es mayor a las de los países en desarollo. Las rectas de cada gráfica se posicionan, diferenciando así este valor entre las poblaciones. En la siguiente gráfica, podemos ver esta comparativa de las dos poblaciones. El valor "0" representa a los países en desarrollo, mientras que "1", representa la población contraria.
 
 ```{r warning=FALSE}
 ggplot(data=Dataset_Life_expectancy,mapping=aes(Year,`Life expectancy`,color=Status))+geom_point()+geom_smooth(method="lm",se=FALSE)+labs(title="Expectativa de vida entre el año 2000 y el año 2015")
 
 ```
 
-
-
 ```{r warning=FALSE}
-reg_mod <- lm(`Life expectancy` ~ `Adult Mortality`+ `infant deaths` + Alcohol + `percentage expenditure`+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
+reg_mod <- lm(`Life expectancy` ~ `Adult Mortality`+ `infant deaths` + Alcohol+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
 summary(reg_mod)
 avPlots(reg_mod)
 ```
 
 # Clasificación de poblaciones.
 
+A continuación, realizaremos un modelo para clasificar poblaciones según su desarrollo y continente. Anterior a aquello, normalizamos los datos, y creamos dos modelos de clasificación. El primero es una clasificación por tipo de desarrollo y el segundo por continente de cada país.
 
-A continuación, realizaremos un modelo para clasificar poblaciones segun su desarrollo y continente. Veremos, depués de partir los datos, que tan equivocado puede llegar a ser el modelo después de creado,
 
 ```{r warning=FALSE}
-mdl1<- lda(`Status` ~ `Adult Mortality`+ `Life expectancy`+`infant deaths` + Alcohol + `percentage expenditure`+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
+
+
+Dataset_Life_expectancy<-na.omit(Dataset_Life_expectancy)
+
+Dataset_Life_expectancy$`Life expectancy` <- log10(max(Dataset_Life_expectancy$`Life expectancy`+1) - Dataset_Life_expectancy$`Life expectancy`)
+
+Dataset_Life_expectancy$`Adult Mortality` <- log10(Dataset_Life_expectancy$`Adult Mortality`)
+Dataset_Life_expectancy$`Alcohol` <- log10(Dataset_Life_expectancy$`Alcohol`)
+
+Dataset_Life_expectancy$`Hepatitis B` <- log10(max(Dataset_Life_expectancy$`Hepatitis B`+1) - Dataset_Life_expectancy$`Hepatitis B`)
+
+
+Dataset_Life_expectancy$`BMI` <- log10(max(Dataset_Life_expectancy$`BMI`+1) - Dataset_Life_expectancy$`BMI`)
+
+Dataset_Life_expectancy$`Polio` <- log10(max(Dataset_Life_expectancy$`Polio`+1) - Dataset_Life_expectancy$`Polio`)
+
+Dataset_Life_expectancy$`Total expenditure` <- log10(Dataset_Life_expectancy$`Total expenditure`)
+
+Dataset_Life_expectancy$`Diphtheria` <- log10(max(Dataset_Life_expectancy$`Diphtheria`+1) - Dataset_Life_expectancy$`Diphtheria`)
+
+Dataset_Life_expectancy
+
+mdl1<- lda(`Status` ~ `Adult Mortality`+ `Life expectancy`+`infant deaths` + Alcohol+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
+
+Test_dataset<-na.omit(Test_dataset)
+
+Test_dataset$`Life expectancy` <- log10(max(Test_dataset$`Life expectancy`+1) - Test_dataset$`Life expectancy`)
+
+Test_dataset$`Adult Mortality` <- log10(Test_dataset$`Adult Mortality`)
+Test_dataset$`Alcohol` <- log10(Test_dataset$`Alcohol`)
+
+Test_dataset$`Hepatitis B` <- log10(max(Test_dataset$`Hepatitis B`+1) - Test_dataset$`Hepatitis B`)
+
+
+Test_dataset$`BMI` <- log10(max(Test_dataset$`BMI`+1) - Test_dataset$`BMI`)
+
+Test_dataset$`Polio` <- log10(max(Test_dataset$`Polio`+1) - Test_dataset$`Polio`)
+
+Test_dataset$`Total expenditure` <- log10(Test_dataset$`Total expenditure`)
+
+Test_dataset$`Diphtheria` <- log10(max(Test_dataset$`Diphtheria`+1) - Test_dataset$`Diphtheria`)
 
 testeando_1 <- predict(object = mdl1, Test_dataset)
 table(Test_dataset$Status, testeando_1$class, dnn = c("PoblaciÃ³n", "PredicciÃ³n poblaciÃ³n"))
 
-error1 <- (24/395)
+error1 <- (35/395)
 cat("\nError del modelo: \n")
 sprintf("error: %f", error1 *100) #porciento
 
-mdl2<- lda(`continent` ~ `Adult Mortality`+ `Life expectancy`+`infant deaths` + Alcohol + `percentage expenditure`+`Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
+mdl2<- lda(`continent` ~ `Adult Mortality`+ `Life expectancy`+`infant deaths` + Alcohol + `Hepatitis B`+ Measles + BMI + `Hepatitis B` + `under-five deaths` + Polio + `Total expenditure` + Diphtheria + `HIV/AIDS`+ Population + `thinness  1-19 years` + `thinness 5-9 years` + `Income composition of resources` + Schooling, data = Dataset_Life_expectancy)
 
 testeando_2 <- predict(object = mdl2, Test_dataset)
 table(Test_dataset$continent, testeando_2$class, dnn = c("PoblaciÃ³n", "PredicciÃ³n poblaciÃ³n"))
@@ -154,16 +328,18 @@ error2 <- (81/395)
 cat("\nError del modelo: \n")
 sprintf("error: %f", error2 *100) #porciento
 
-
-
-
 ```
 
+El modelo 1 representa la clasificación por país desarrollado o en desarrollo, y al ser solo dos poblaciones, el modelo tiene un error del 6%, mientras que el modelo 2 representa la clasificación por continente, con un error del 20%. El error alto del segundo modelo ocurre por el alto número de poblaciones a clasificar y las diferencias sociales entre países que pueden estar en un mismo continente.
 
+Podemos ver que creamos un modelo de clasificación acertado para tipo de desarrollo. Esto es útil en pues, para poblaciones más pequeñas que no son necesariamente países, podríamos estimar que tan desarrollado está ese subgrupo.
 
+# Conclusiones
 
+** - ** Por medio de la realizacion del avPlot, pudimos determinar que la variable población no tenía ningún efecto sobre la esperanza de vida.
 
+** - ** Según lo obtenido tras el análisis de componentes principales, se puede explicar el 99% de los datos en dos dimensiones, es decir, con dos componentes principales, reduciendo grandemente nuestra dimensionalidad. Tomando esto, se realizaron las gráficas exploratorias y descriptivas para poder visualizar mejor los datos.
 
+** - ** En cuanto a la regresión lineal, la expectativa de vida en países desarrollados es mayor a las de los países en desarrollo, como era de esperarse. Esto se puede ver también comparado con las otras variables que implican enfermedades o problemas sociales. La mortalidad de adultos, alcohol, entre otras es lo que mas influye.
 
-
-
+** - ** En cuanto a la clasificación de poblaciones, podemos ver que creamos un modelo de clasificación acertado para tipo de desarrollo. Esto es útil en pues, para poblaciones más pequeñas que no son necesariamente países, podríamos estimar que tan desarrollado está ese subgrupo.
